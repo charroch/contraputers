@@ -1,0 +1,11 @@
+[app]
+  version: 0.1.0
+  org: com.novoda
+  name: dab
+  class: com.novoda.App
+[scala]
+  version: 2.10.2
+[repositories]
+  local
+  scala-tools-releases
+  maven-central
