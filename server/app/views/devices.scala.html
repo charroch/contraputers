@@ -1,4 +1,4 @@
-@(devices: Array[controllers.Device])
+@(devices: Array[controllers.DeviceView])
 
 @main("List of devices attached") {
 <h1>Devices</h1>
@@ -15,7 +15,7 @@
     </tr>
     @devices.map { device =>
     <tr>
-        <th>@device.serial</th>
+        <th><a href="@routes.Device.index(device.serial)" >@device.serial</a></th>
         <th>@device.SDK</th>
         <th>@device.release</th>
         <th>@device.hostname</th>

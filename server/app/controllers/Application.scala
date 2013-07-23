@@ -7,8 +7,8 @@ import com.android.ddmlib.IDevice
 
 object Application extends Controller {
 
-  val toDevice: (IDevice) => Device = device =>
-    new Device(
+  val toDevice: (IDevice) => DeviceView = device =>
+    new DeviceView(
       device.getSerialNumber,
       device.getProperty("dhcp.wlan0.ipaddress"),
       device.getProperty("net.hostname"),
@@ -23,4 +23,4 @@ object Application extends Controller {
   }
 }
 
-case class Device(val serial: String, val IP: String, val hostname: String, val release: String, val SDK: String, val manufacturer: String, val model: String)
+case class DeviceView(val serial: String, val IP: String, val hostname: String, val release: String, val SDK: String, val manufacturer: String, val model: String)

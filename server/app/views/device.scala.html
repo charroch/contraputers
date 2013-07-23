@@ -1,0 +1,12 @@
+@(device: DeviceView)
+@main("Device: " + device.serial) {
+
+<div style="display:inline; height:20px">
+    @device
+</div>
+
+
+<br/>
+<img src="@routes.Device.screenshotRaw(device.serial)" class="img-polaroid" style="display:inline; height:250px"/>
+
+}
