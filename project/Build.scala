@@ -7,7 +7,7 @@ object DabBuild extends Build {
 
   lazy val DAB = Project(
     id = "dab",
-    base = file("."),
+    base = file("dab"),
     settings = Project.defaultSettings ++ conscript.Harness.conscriptSettings ++ Seq(
       name := "dab",
 
@@ -20,7 +20,8 @@ object DabBuild extends Build {
         "releases" at "http://oss.sonatype.org/content/repositories/releases"
       ),
       libraryDependencies ++= Seq(
-        "org.specs2" %% "specs2" % "1.11"
+        "org.specs2" %% "specs2" % "1.11",
+        "com.typesafe.akka" %% "akka-actor" % "2.2.0"
       ),
       unmanagedJars in Compile <<= androidHome map {
         androidHome: File => (androidHome / "tools/lib/" ** (
@@ -28,4 +29,27 @@ object DabBuild extends Build {
       }
     )
   )
+
+  import sbt._
+  import Keys._
+  import play.Project._
+
+  val appName = "server"
+  val appVersion = "1.0-SNAPSHOT"
+
+  val appDependencies = Seq(
+    // Add your project dependencies here,
+    jdbc,
+    anorm,
+    cache
+  )
+
+
+  val server = play.Project(appName, appVersion, appDependencies, file("server")).settings(
+    androidHome := file(System.getenv("ANDROID_HOME")),
+    unmanagedJars in Compile <<= androidHome map {
+      androidHome: File => (androidHome / "tools/lib/" ** "ddm*").classpath
+    }
+  )
+
 }

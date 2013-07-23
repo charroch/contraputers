@@ -1,0 +1,28 @@
+@(devices: Array[controllers.Device])
+
+@main("List of devices attached") {
+<h1>Devices</h1>
+
+<table class="table table-striped">
+    <tr>
+        <th>serial</th>
+        <th>sdk</th>
+        <th>release</th>
+        <th>hostname</th>
+        <th>manufacturer</th>
+        <th>model</th>
+        <th>IP</th>
+    </tr>
+    @devices.map { device =>
+    <tr>
+        <th>@device.serial</th>
+        <th>@device.SDK</th>
+        <th>@device.release</th>
+        <th>@device.hostname</th>
+        <th>@device.manufacturer</th>
+        <th>@device.model</th>
+        <th>@device.IP</th>
+    </tr>
+    }
+</table>
+}

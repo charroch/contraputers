@@ -1,3 +1,5 @@
+addSbtPlugin("net.databinder" % "conscript-plugin" % "0.3.5")
+
 // Comment to get more information during initialization
 logLevel := Level.Warn
 
