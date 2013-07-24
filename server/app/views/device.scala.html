@@ -1,12 +1,42 @@
-@(device: DeviceView)
+@(device: DeviceView)(implicit request: RequestHeader)
+
 @main("Device: " + device.serial) {
 
-<div style="display:inline; height:20px">
+<div style="display:inline; height:20p">
     @device
 </div>
 
+<div style="height:100px;overflow:auto;">
+<table id="console" class="table table-striped console">
+    <tbody>
+    <tr>
+        <td>Foo</td>
+    </tr>
+    </tbody>
+</table>
+</div>
 
 <br/>
+
 <img src="@routes.Device.screenshotRaw(device.serial)" class="img-polaroid" style="display:inline; height:250px"/>
+
+<script>
+      /*
+var connection = new WebSocket('@routes.Device.logcat(device.serial).webSocketURL()');
+
+connection.onopen = function () {
+};
+
+// Log errors
+connection.onerror = function (error) {
+  console.log('WebSocket Error ' + error);
+};
+
+// Log messages from the server
+connection.onmessage = function (e) {
+  $("table#console > tbody").append("<tr><td>" + e.data + "</td></tr>")
+};
+           */
+</script>
 
 }

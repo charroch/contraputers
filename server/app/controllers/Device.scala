@@ -1,16 +1,23 @@
 package controllers
 
 import play.api.mvc.{WebSocket, Action, Controller}
-import com.android.ddmlib.{IDevice, RawImage, AndroidDebugBridge}
+import com.android.ddmlib.{IShellOutputReceiver, IDevice, RawImage, AndroidDebugBridge}
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 import play.api.libs.iteratee.{Iteratee, Enumerator}
 import scala.concurrent.ExecutionContext
 import ExecutionContext.Implicits.global
 import adb.Bridge
-import com.android.ddmlib.log.LogReceiver
+import com.android.ddmlib.log.{EventLogParser, LogReceiver}
 import com.android.ddmlib.log.LogReceiver.{LogEntry, ILogListener}
 import java.io.OutputStream
+import java.nio.charset.Charset
+import com.android.ddmlib.log.EventContainer.EventValueType
+import com.android.ddmlib.logcat.LogCatReceiverTask
+import play.mvc.Http.Request
+import play.mvc.BodyParser.AnyContent
+import play.mvc.Result
+import org.h2.engine.User
 
 object Device extends Controller {
 
@@ -26,27 +33,32 @@ object Device extends Controller {
     )
 
   def index(serial: String) = Action {
-    Ok(views.html.device(Bridge.devices.find(_.getSerialNumber == serial).map(toDevice).get))
+    implicit request =>
+      Ok(views.html.device(Bridge.devices.find(_.getSerialNumber == serial).map(toDevice).get))
   }
 
-  def listener(o: OutputStream): LogReceiver.ILogListener = new ILogListener {
-    def newEntry(p1: LogEntry) {
+  def logcatreceiver(o: OutputStream) = new IShellOutputReceiver {
+
+    def addOutput(data: Array[Byte], offset: Int, length: Int) {
+      o.write(data, offset, length);
     }
 
-    def newData(p1: Array[Byte], p2: Int, p3: Int) {
-      o.write(p1, p2, p3)
+    def flush() {
+      o.flush()
     }
+
+    def isCancelled: Boolean = false
   }
 
-  def logcat(serial: String) = WebSocket.using[Array[Byte]] {
+  def logcat(serial: String) = WebSocket.using[String] {
     request =>
       val enumerator = Enumerator.outputStream {
         os =>
           val d = AndroidDebugBridge.createBridge.getDevices.find(_.getSerialNumber == serial).get
-          d.runEventLogService(new LogReceiver(listener(os)))
-      }
-      val in = Iteratee.consume[Array[Byte]]()
-      val out = enumerator >>> Enumerator.eof
+          d.executeShellCommand("logcat -v long", logcatreceiver(os), 0)
+      }.map(new String(_, Charset.forName("utf-8")).replace("\n", "<br />\n"))
+      val in = Iteratee.consume[String]()
+      val out = enumerator
       (in, out)
   }
 
@@ -82,3 +94,12 @@ object Device extends Controller {
   }
 
 }
+
+//
+//trait DeviceAction {
+//  def Authenticated(f: (IDevice, Request[AnyContent]) => Result) = {
+//    Action {
+//      request =>
+//    }
+//  }
+//}
