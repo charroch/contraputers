@@ -1,9 +1,9 @@
 package adb
-
-class ADBDevice(device:IDevice) {
-
-}
-
-object ADBDevice {
-
-}
+//
+//class ADBDevice(device:IDevice) {
+//
+//}
+//
+//object ADBDevice {
+//
+//}

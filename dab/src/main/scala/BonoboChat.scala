@@ -6,11 +6,11 @@ import com.novoda.dab.actors.{Start, DeviceManager}
 
 object BonoboChat {
 
-  val system = ActorSystem()
+  val system =  ActorSystem()
 
   val log = Logging(system, BonoboChat.getClass().getName())
 
-  def main(args: Array[String]): Unit = run()
+//  def main(args: Array[String]): Unit = run()
 
   def run() = {
     log.debug("Initializing chat system.")

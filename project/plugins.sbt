@@ -1,10 +1,7 @@
 addSbtPlugin("net.databinder" % "conscript-plugin" % "0.3.5")
 
-// Comment to get more information during initialization
-logLevel := Level.Warn
+addSbtPlugin("com.typesafe.akka" % "akka-sbt-plugin" % "2.2.0")
 
-// The Typesafe repository 
-resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
-
-// Use the Play sbt plugin for Play projects
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.2.0-M1")
+
+logLevel := Level.Warn

@@ -1,33 +1,46 @@
 import sbt._
-import sbt.Keys._
+import Keys._
+import akka.sbt.AkkaKernelPlugin
+import akka.sbt.AkkaKernelPlugin.{Dist, outputDirectory, distJvmOptions}
 
-object DabBuild extends Build {
+object HelloKernelBuild extends Build {
+  val Organization = "com.novoda.dab"
+  val Version = "1.0.0"
+  val ScalaVersion = "2.10.2"
 
   lazy val androidHome = SettingKey[File]("android-home", "root dir of android")
 
-  lazy val DAB = Project(
-    id = "dab",
+  lazy val DABKernel = Project(
+    id = "dab-kernel",
     base = file("dab"),
-    settings = Project.defaultSettings ++ conscript.Harness.conscriptSettings ++ Seq(
-      name := "dab",
-
-      organization := "com.novoda",
-      version := "0.1-SNAPSHOT",
-      scalaVersion := "2.10.2",
+    settings = defaultSettings ++ AkkaKernelPlugin.distSettings ++ Seq(
+      libraryDependencies ++= Dependencies.helloKernel,
+      distJvmOptions in Dist := "-Xms256M -Xmx1024M",
+      outputDirectory in Dist := file("target/dab-dist"),
       androidHome := file(System.getenv("ANDROID_HOME")),
       resolvers ++= Seq(
         "snapshots" at "http://oss.sonatype.org/content/repositories/snapshots",
         "releases" at "http://oss.sonatype.org/content/repositories/releases"
       ),
-      libraryDependencies ++= Seq(
-        "org.specs2" %% "specs2" % "1.11",
-        "com.typesafe.akka" %% "akka-actor" % "2.2.0"
-      ),
       unmanagedJars in Compile <<= androidHome map {
-        androidHome: File => (androidHome / "tools/lib/" ** (
-          "monkeyrunner.jar" || "chimpchat.jar" || "hierarchyviewer*" || "guava*" || "ddm*" || "swt*")).classpath
+        androidHome: File => (androidHome / "tools/lib/" ** "ddm*").classpath
       }
     )
+  )
+
+  lazy val buildSettings = Defaults.defaultSettings ++ Seq(
+    organization := Organization,
+    version := Version,
+    scalaVersion := ScalaVersion,
+    crossPaths := false,
+    organizationName := "Novoda LTD",
+    organizationHomepage := Some(url("http://www.novoda.com"))
+  )
+
+  lazy val defaultSettings = buildSettings ++ Seq(
+    // compile options
+    scalacOptions ++= Seq("-encoding", "UTF-8", "-deprecation", "-unchecked"),
+    javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation")
   )
 
   import sbt._
@@ -52,4 +65,27 @@ object DabBuild extends Build {
     }
   )
 
+  server.dependsOn(DABKernel)
+}
+
+object Dependencies {
+
+  import Dependency._
+
+  val helloKernel = Seq(
+    akkaKernel, akkaSlf4j, logback, specs
+  )
+}
+
+object Dependency {
+
+  // Versions
+  object V {
+    val Akka = "2.2.0"
+  }
+
+  val akkaKernel = "com.typesafe.akka" %% "akka-kernel" % V.Akka
+  val akkaSlf4j = "com.typesafe.akka" %% "akka-slf4j" % V.Akka
+  val logback = "ch.qos.logback" % "logback-classic" % "1.0.0"
+  val specs = "org.specs2" %% "specs2" % "1.11"
 }

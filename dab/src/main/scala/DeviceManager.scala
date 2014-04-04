@@ -7,7 +7,6 @@ import com.android.ddmlib.{IDevice, AndroidDebugBridge, Client}
 
 class DeviceManager extends Actor with ActorLogging {
 
-
   val clientChangeListener = new IClientChangeListener {
     def clientChanged(client: Client, index: Int) {
     }
@@ -37,8 +36,9 @@ class DeviceManager extends Actor with ActorLogging {
 }
 
 sealed trait ManagerCommand
-
+sealed trait Reply
 case object Start extends ManagerCommand
+case object Started extends Reply
 
 object DeviceManager {
 

@@ -5,10 +5,7 @@ import com.android.ddmlib.{AndroidDebugBridge, IDevice, Client}
 import java.util.concurrent.{TimeUnit, CountDownLatch}
 
 
-class App extends xsbti.AppMain {
-  def run(config: xsbti.AppConfiguration) = {
-    Exit(App.run(config.arguments))
-  }
+class App  {
 }
 
 object App {
@@ -86,9 +83,9 @@ object App {
 
   }
 
-  def main(args: Array[String]) {
-    run(args)
-  }
+//  def main(args: Array[String]) {
+//    run(args)
+//  }
 
   object Tabulator {
     def format(table: Seq[Seq[Any]]) = table match {
@@ -123,6 +120,6 @@ object App {
 /**
  * Serial IP Hostname Release SDK manufacturer, model
  */
-case class Exit(val code: Int) extends xsbti.Exit
+case class Exit(val code: Int)
 
 case class Device(val serial: String, val IP: String, val hostname: String, val release: String, val SDK: String, val manufacturer: String, val model: String)
